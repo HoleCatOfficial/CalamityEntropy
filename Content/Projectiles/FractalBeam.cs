@@ -30,15 +30,23 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override void AI()
         {
+            Config cfg = ModContent.GetInstance<Config>();
             if (Projectile.localAI[0] == 0)
             {
                 Projectile.localAI[0]++;
 
                 Vector2 norl = Projectile.velocity.normalize();
                 float sengs = 3;
+                int amnt = 120;
+
+                if (cfg.PerformanceMode)
+                {
+                    amnt = 70;
+                } 
+                
                 var color = Color.SkyBlue;
 
-                for (int j = 0; j < 120; j++)
+                for (int j = 0; j < amnt; j++)
                 {
                     var spark = new HeavenfallStar();
                     EParticle.NewParticle(spark, Projectile.Center, norl * (0.1f + j * 0.34f) * sengs, color, Main.rand.NextFloat(0.6f, 1.3f), 1, true, BlendState.Additive, norl.ToRotation(), 24);

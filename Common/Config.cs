@@ -39,6 +39,9 @@ namespace CalamityEntropy.Common
         [Header("Other")]
 
         [DefaultValue(false)]
+        public bool PerformanceMode { get; set; }
+
+        [DefaultValue(false)]
         public bool BindingOfIsaac_Rep_BossMusic { get; set; }
 
         [DefaultValue(false)]

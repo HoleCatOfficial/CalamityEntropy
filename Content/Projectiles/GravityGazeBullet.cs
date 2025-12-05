@@ -47,27 +47,36 @@ namespace CalamityEntropy.Content.Projectiles
         public bool s = true;
         public override bool PreDraw(ref Color lightColor)
         {
-            if (s)
+            Config cfg = ModContent.GetInstance<Config>();
+            if (!cfg.PerformanceMode)
             {
+                if (s)
+                {
+                    return false;
+                }
+                Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
+                Asset<Texture2D> texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Enchanted", AssetRequestMode.ImmediateLoad);
+                Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Transform2", AssetRequestMode.ImmediateLoad).Value;
+                shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly);
+                shader.Parameters["color"].SetValue(new Color(160, 80, 255, 255).ToVector4());
+                shader.Parameters["strength"].SetValue(1.6f);
+                shader.Parameters["baseColor"].SetValue((Color.Lerp(new Color(104 * 0.6f, 127 * 0.6f, 255 * 0.6f), new Color(238 * 0.6f, 244 * 0.6f, 213 * 0.6f), (float)Math.Cos(Main.GlobalTimeWrappedHourly * 6f + Projectile.ai[1])) * alpha).ToVector4());
+                shader.CurrentTechnique.Passes["EnchantedPass"].Apply();
+                Main.instance.GraphicsDevice.Textures[1] = texture.Value;
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
+    
+                Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.velocity.ToRotation(), new Vector2(tex.Width, tex.Height / 2), new Vector2(CEUtils.getDistance(Projectile.Center, tail) / tex.Width, 0.26f), SpriteEffects.None, 0);
+                Main.spriteBatch.End();
+                Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
+    
                 return false;
             }
-            Texture2D tex = TextureAssets.Projectile[Projectile.type].Value;
-            Asset<Texture2D> texture = ModContent.Request<Texture2D>("CalamityEntropy/Assets/Extra/Enchanted", AssetRequestMode.ImmediateLoad);
-            Effect shader = ModContent.Request<Effect>("CalamityEntropy/Assets/Effects/Transform2", AssetRequestMode.ImmediateLoad).Value;
-            shader.Parameters["uTime"].SetValue(Main.GlobalTimeWrappedHourly);
-            shader.Parameters["color"].SetValue(new Color(160, 80, 255, 255).ToVector4());
-            shader.Parameters["strength"].SetValue(1.6f);
-            shader.Parameters["baseColor"].SetValue((Color.Lerp(new Color(104 * 0.6f, 127 * 0.6f, 255 * 0.6f), new Color(238 * 0.6f, 244 * 0.6f, 213 * 0.6f), (float)Math.Cos(Main.GlobalTimeWrappedHourly * 6f + Projectile.ai[1])) * alpha).ToVector4());
-            shader.CurrentTechnique.Passes["EnchantedPass"].Apply();
-            Main.instance.GraphicsDevice.Textures[1] = texture.Value;
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, shader, Main.GameViewMatrix.TransformationMatrix);
-
-            Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.velocity.ToRotation(), new Vector2(tex.Width, tex.Height / 2), new Vector2(CEUtils.getDistance(Projectile.Center, tail) / tex.Width, 0.26f), SpriteEffects.None, 0);
-            Main.spriteBatch.End();
-            Main.spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, Main.DefaultSamplerState, DepthStencilState.None, RasterizerState.CullNone, null, Main.GameViewMatrix.TransformationMatrix);
-
-            return false;
+            else
+            {
+                 Main.spriteBatch.Draw(tex, Projectile.Center - Main.screenPosition, null, Color.White, Projectile.velocity.ToRotation(), new Vector2(tex.Width, tex.Height / 2), new Vector2(CEUtils.getDistance(Projectile.Center, tail) / tex.Width, 0.26f), SpriteEffects.None, 0);
+                return false;
+            } 
         }
     }
 

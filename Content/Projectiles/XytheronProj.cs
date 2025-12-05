@@ -189,7 +189,11 @@ namespace CalamityEntropy.Content.Projectiles
         }
         public override bool PreDraw(ref Color lightColor)
         {
-            drawSlash();
+            Config cfg = ModContent.GetInstance<Config>();
+            if (!cfg.PerformanceMode)
+            {
+                drawSlash();
+            }
             return false;
         }
         public void drawSword()

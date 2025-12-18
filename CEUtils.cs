@@ -31,6 +31,22 @@ namespace CalamityEntropy
 {
     public static class CEUtils
     {
+        #region performance mode
+        //Move this region to a location you find more fitting. -HoleCat
+        public static AssetRequestMode PerformanceRequest(AssetRequestMode default)
+        {
+            var cfg = ModContent.GetInstance<Config>();
+            if (cfg.PerformanceMode)
+            {
+                return AssetRequestMode.AsyncLoad;
+            }
+            else
+            {
+                return default;
+            }
+        }
+
+        #endregion
         public static int GetPriceFromRecipe(this ModItem item, Recipe recipe)
         {
             int total = 0;
